@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="4" fill="#ede7d9"/>
+  <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle"
+        font-family="Georgia, 'Fraunces', serif" font-style="italic"
+        font-weight="600" font-size="20" fill="#0e0e0e">e<tspan dx="-1">y</tspan></text>
+  <circle cx="25" cy="8" r="2" fill="#d6452b"/>
+</svg>

@@ -1,0 +1,27 @@
+---
+const items = [
+  "Cloud Engineer",
+  "DevOps",
+  "MLOps",
+  "Çanakkale · İstanbul",
+  "MMXXVI",
+  "AWS · Terraform · Kubernetes",
+  "SageMaker · LangGraph",
+  "Available for select projects",
+];
+const sep = "✦";
+const loop = [...items, ...items, ...items, ...items];
+---
+
+<div class="relative overflow-hidden border-y border-[var(--rule)] py-5 bg-[var(--ink)] text-[var(--paper)]">
+  <div class="marquee-track display text-5xl md:text-7xl italic" style="font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;">
+    {
+      loop.map((t) => (
+        <span class="inline-flex items-center gap-12 shrink-0">
+          <span>{t}</span>
+          <span class="text-[var(--accent)] not-italic" style="font-family: var(--font-mono);">{sep}</span>
+        </span>
+      ))
+    }
+  </div>
+</div>

@@ -1,0 +1,46 @@
+---
+import "../styles/global.css";
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Enes Yaprak — Field Notes / Web Developer",
+  description = "Enes Yaprak — web developer & builder of small useful things. Selected work, notes, contact.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ede7d9" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    />
+
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+
+    <script>
+      import { initSmoothScroll } from "../scripts/scroll.ts";
+      import { initCursor } from "../scripts/cursor.ts";
+      import { initAnimations } from "../scripts/animations.ts";
+
+      initSmoothScroll();
+      initCursor();
+      initAnimations();
+    </script>
+  </body>
+</html>

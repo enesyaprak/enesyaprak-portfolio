@@ -1,0 +1,102 @@
+---
+const socials = [
+  { label: "GitHub", handle: "@enesyaprak", href: "https://github.com/enesyaprak" },
+  { label: "LinkedIn", handle: "/in/ensyprk", href: "https://www.linkedin.com/in/ensyprk" },
+  { label: "Web", handle: "enesyaprak.com", href: "https://enesyaprak.com" },
+];
+const year = new Date().getFullYear();
+---
+
+<section
+  id="contact"
+  class="relative px-6 md:px-10 py-28 md:py-40 overflow-hidden"
+>
+  <!-- Section header -->
+  <div class="grid grid-cols-12 gap-4 items-baseline border-b border-[var(--rule)] pb-4 mb-12">
+    <span class="col-span-2 md:col-span-1 mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--accent)]">
+      §05
+    </span>
+    <span class="col-span-10 md:col-span-7 mono text-[0.62rem] uppercase tracking-[0.22em]">
+      Telegram — Reach the desk, directly
+    </span>
+    <span class="hidden md:block md:col-span-4 text-right mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+      Reply within 24–48h
+    </span>
+  </div>
+
+  <!-- Big invitation -->
+  <h2
+    class="display text-[18vw] md:text-[12vw] leading-[0.85] tracking-[-0.04em] mb-12"
+    data-anim="split"
+  >
+    Bir şey<br />
+    <span class="italic outline-text">kuralım</span> mı?
+  </h2>
+
+  <!-- Email -->
+  <div class="grid md:grid-cols-12 gap-x-10 gap-y-12 items-start">
+    <div class="md:col-span-7" data-anim="fade-up">
+      <span class="mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--muted)]">i. yaz</span>
+      <a
+        href="mailto:enesyprkone@gmail.com"
+        class="block mt-3 display text-3xl md:text-5xl tracking-[-0.02em] editorial-link"
+        data-cursor="grow"
+      >
+        enesyprkone<span class="text-[var(--accent)]">@</span>gmail.com
+      </a>
+      <p class="mt-5 max-w-md text-base leading-[1.5] text-[var(--ink)]/80">
+        Proje, iş birliği, bir soru veya sadece selam vermek için yazabilirsin. Genelde bir–iki gün içinde geri dönüyorum.
+      </p>
+    </div>
+
+    <!-- Classified-ad style index of socials -->
+    <div class="md:col-span-5 border border-[var(--ink)] p-6 md:p-8 relative bg-[var(--paper-2)]" data-anim="fade-up">
+      <div class="absolute -top-3 left-6 bg-[var(--paper)] px-3">
+        <span class="mono text-[0.6rem] uppercase tracking-[0.22em] text-[var(--accent)]">
+          ii. başka yer
+        </span>
+      </div>
+
+      <ul class="divide-y divide-[var(--rule)]">
+        {
+          socials.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center justify-between py-3 group magnetic"
+                data-cursor="grow"
+                data-magnetic="0.2"
+              >
+                <span class="flex items-baseline gap-3">
+                  <span class="mono text-[0.58rem] uppercase tracking-[0.22em] text-[var(--muted)] w-16 shrink-0">
+                    {s.label}
+                  </span>
+                  <span class="display text-xl text-[var(--ink)] group-hover:text-[var(--accent)] transition-colors">
+                    {s.handle}
+                  </span>
+                </span>
+                <span class="mono text-[0.7rem] text-[var(--muted)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all" aria-hidden>↗</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="absolute -bottom-3 right-6 bg-[var(--paper)] px-3">
+        <span class="mono text-[0.55rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+          Replies welcome
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Colophon / footer -->
+  <footer class="mt-32 pt-6 border-t border-[var(--rule)] grid grid-cols-12 gap-4 mono text-[0.6rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+    <span class="col-span-6 md:col-span-3">© {year} Enes Yaprak</span>
+    <span class="hidden md:block md:col-span-3 text-center">Set in Fraunces & JetBrains Mono</span>
+    <span class="hidden md:block md:col-span-3 text-center">Printed in İstanbul</span>
+    <span class="col-span-6 md:col-span-3 text-right">— End of issue —</span>
+  </footer>
+</section>

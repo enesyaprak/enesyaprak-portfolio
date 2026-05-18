@@ -1,0 +1,98 @@
+---
+const groups = [
+  {
+    n: "i.",
+    title: "Cloud & DevOps",
+    desc: "Altyapı, IaC, orkestrasyon",
+    items: [
+      { name: "AWS", note: "EC2, S3, IAM" },
+      { name: "Azure", note: "fundamentals" },
+      { name: "DigitalOcean", note: "droplets" },
+      { name: "Terraform", note: "active dev" },
+      { name: "Docker", note: "compose" },
+      { name: "Kubernetes", note: "deploy + helm" },
+      { name: "CI/CD", note: "GitHub Actions" },
+    ],
+  },
+  {
+    n: "ii.",
+    title: "AI & MLOps",
+    desc: "Model dağıtım & agent sistemleri",
+    items: [
+      { name: "SageMaker", note: "pipelines, monitoring" },
+      { name: "LangGraph", note: "multi-agent" },
+      { name: "GPT-4o-mini", note: "cost-efficient" },
+      { name: "LLM Integrations", note: "prompt + tools" },
+      { name: "Claude Code", note: "günlük kullanım" },
+    ],
+  },
+  {
+    n: "iii.",
+    title: "Otomasyon & Build",
+    desc: "SaaS, betik, içerik",
+    items: [
+      { name: "Python", note: "ana dilim" },
+      { name: "n8n", note: "workflow" },
+      { name: "WhatsApp API", note: "müşteri akışı" },
+      { name: "Remotion", note: "video kodu" },
+      { name: "Git", note: "günde defalarca" },
+    ],
+  },
+];
+---
+
+<section id="stack" class="relative px-6 md:px-10 py-28 md:py-40 bg-[var(--paper-2)]">
+  <!-- Section header -->
+  <div class="grid grid-cols-12 gap-4 items-baseline border-b border-[var(--rule)] pb-4 mb-12">
+    <span class="col-span-2 md:col-span-1 mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--accent)]">
+      §03
+    </span>
+    <span class="col-span-10 md:col-span-7 mono text-[0.62rem] uppercase tracking-[0.22em]">
+      Reading List — Tools, in current rotation
+    </span>
+    <span class="hidden md:block md:col-span-4 text-right mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+      Updated weekly
+    </span>
+  </div>
+
+  <div class="grid md:grid-cols-12 gap-x-10 gap-y-16">
+    <div class="md:col-span-4" data-anim="fade-up">
+      <h2 class="display text-5xl md:text-7xl leading-[0.9] tracking-[-0.03em]">
+        Atölye<br />
+        <span class="italic text-[var(--accent)]">envanteri.</span>
+      </h2>
+      <p class="mt-6 text-base leading-[1.5] text-[var(--ink)]/80 max-w-sm">
+        Liste sabit değil. Bir şey her gün açılıyorsa burada. Açılmıyorsa, çıkarıyorum.
+      </p>
+    </div>
+
+    <div class="md:col-span-8 grid sm:grid-cols-3 gap-8">
+      {
+        groups.map((group) => (
+          <div data-anim="fade-up">
+            <div class="flex items-baseline gap-2 mb-4">
+              <span class="mono text-[0.6rem] uppercase tracking-[0.22em] text-[var(--accent)]">
+                {group.n}
+              </span>
+              <h3 class="display text-2xl">{group.title}</h3>
+            </div>
+            <p class="mono text-[0.55rem] uppercase tracking-[0.22em] text-[var(--muted)] mb-4 border-b border-[var(--rule)] pb-3">
+              {group.desc}
+            </p>
+            <ul class="space-y-2">
+              {group.items.map((item) => (
+                <li class="flex items-baseline justify-between gap-3 text-base">
+                  <span class="text-[var(--ink)]">{item.name}</span>
+                  <span class="flex-1 border-b border-dotted border-[var(--rule)] mb-1.5"></span>
+                  <span class="mono text-[0.6rem] uppercase tracking-[0.18em] text-[var(--muted)]">
+                    {item.note}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,47 @@
+---
+const links = [
+  { href: "#work", label: "Case Files", num: "01" },
+  { href: "#about", label: "Practice", num: "02" },
+  { href: "#stack", label: "Stack", num: "03" },
+  { href: "#record", label: "Record", num: "04" },
+  { href: "#contact", label: "Telegram", num: "05" },
+];
+---
+
+<header
+  class="fixed top-0 inset-x-0 z-40 px-6 md:px-10 py-4 flex items-center justify-between backdrop-blur-[2px] mix-blend-difference text-[var(--paper)] pointer-events-none"
+>
+  <a
+    href="#top"
+    class="display text-2xl tracking-tight pointer-events-auto magnetic"
+    data-cursor="grow"
+    data-magnetic="0.25"
+    aria-label="Anasayfa"
+  >
+    <span class="italic">E</span><span class="italic">·</span><span class="italic">y</span>
+  </a>
+
+  <nav class="hidden md:flex items-center gap-6 pointer-events-auto">
+    {
+      links.map((link) => (
+        <a
+          href={link.href}
+          class="mono text-[0.65rem] uppercase tracking-[0.22em] magnetic group"
+          data-cursor="grow"
+          data-magnetic="0.3"
+        >
+          <span class="text-[var(--accent)]">§{link.num}</span>
+          <span class="ml-1 editorial-link">{link.label}</span>
+        </a>
+      ))
+    }
+  </nav>
+
+  <a
+    href="#contact"
+    class="md:hidden mono text-[0.65rem] uppercase tracking-[0.22em] pointer-events-auto"
+    data-cursor="grow"
+  >
+    Telegram →
+  </a>
+</header>
