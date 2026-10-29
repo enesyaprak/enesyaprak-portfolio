@@ -1,0 +1,108 @@
+---
+import { profile } from '../../data/profile';
+import Icon from '../Icon.astro';
+---
+
+<div class="tech" data-tech>
+  <p class="eyebrow" data-reveal>Kullandığım teknolojiler</p>
+  <div class="tech__grid" data-reveal-group>
+    {
+      profile.tech.map((t, i) => (
+        <a class="orb" href={t.url ?? '#'} target={t.url ? '_blank' : undefined} rel={t.url ? 'noopener' : undefined} style={`--d:${(i * 0.55).toFixed(2)}s`}>
+          <i>
+            <Icon name={t.icon} size={38} />
+          </i>
+          <span>{t.name}</span>
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  /* Fareyle hafif eğilme; dokunmatik cihazlarda ve hareket azaltmada devre dışı. */
+  const wrap = document.querySelector<HTMLElement>('[data-tech]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(pointer: fine)').matches;
+  if (wrap && !reduce && fine) {
+    wrap.addEventListener('mousemove', (e) => {
+      const orb = (e.target as HTMLElement).closest<HTMLElement>('.orb i');
+      if (!orb) return;
+      const r = orb.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      orb.style.transform = `translate(${x * 10}px, ${y * 10 - 6}px) rotate(${x * -8}deg) scale(1.06)`;
+    });
+    wrap.addEventListener('mouseout', (e) => {
+      const orb = (e.target as HTMLElement).closest<HTMLElement>('.orb i');
+      if (orb) orb.style.transform = '';
+    });
+  }
+</script>
+
+<style>
+  .tech .eyebrow {
+    margin-bottom: 1.1rem;
+  }
+  .tech__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.1rem 0.75rem;
+  }
+  .orb {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-2);
+    min-width: 0;
+  }
+  .orb i {
+    display: grid;
+    place-items: center;
+    width: clamp(64px, 7vw, 92px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-0);
+    color: var(--text-1);
+    transition:
+      transform 0.35s var(--ease-out),
+      border-color 0.3s,
+      color 0.3s,
+      box-shadow 0.3s;
+    animation: orb-float 6s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  .orb:hover i {
+    transform: translateY(-6px) rotate(-6deg) scale(1.06);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 14px 36px -16px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  .orb:hover {
+    color: var(--text-1);
+  }
+  @keyframes orb-float {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -5px;
+    }
+  }
+  @media (max-width: 600px) {
+    .tech__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orb i {
+      animation: none;
+    }
+  }
+</style>

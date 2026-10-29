@@ -1,15 +1,16 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-
-import tailwindcss from '@tailwindcss/vite';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // GEÇİCİ (domain ~20 Ekim'de geri gelene kadar): GitHub Pages proje adresi.
-  // Domain dönünce → site: 'https://enesyaprak.com', base: '/' ve public/CNAME ekle.
-  site: 'https://enesyaprak.github.io',
-  base: '/enesyaprak-portfolio',
+  site: 'https://enesyaprak.com',
+  integrations: [sitemap()],
+  markdown: {
+    shikiConfig: { theme: 'github-dark', wrap: false },
+  },
   vite: {
-    plugins: [tailwindcss()]
-  }
+    // Keep bundled scripts as external files so the CSP can stay `script-src 'self'`.
+    build: { assetsInlineLimit: 0 },
+  },
 });

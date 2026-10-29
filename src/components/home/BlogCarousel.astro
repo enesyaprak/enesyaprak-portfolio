@@ -1,0 +1,241 @@
+---
+import type { Post } from '../../utils/posts';
+import { formatDate, readingTime } from '../../utils/posts';
+
+interface Props {
+  posts: Post[];
+}
+const { posts } = Astro.props;
+const hues = [
+  'linear-gradient(135deg, var(--accent), var(--c2))',
+  'linear-gradient(160deg, var(--bg-2), var(--accent))',
+  'linear-gradient(200deg, var(--c3), var(--c1))',
+];
+---
+
+<div class="car" data-carousel>
+  <div class="car__track" data-track>
+    {
+      posts.map((post, i) => (
+        <article class="slide" aria-roledescription="slayt" aria-label={`${i + 1} / ${posts.length}`}>
+          <a class="slide__photo" href={`/blog/${post.id}/`} style={`background-image:${hues[i % hues.length]}`} tabindex="-1" aria-hidden="true">
+            <span>{post.data.cover ? '' : '[FOTOĞRAF]'}</span>
+          </a>
+          <div class="slide__body">
+            <p class="slide__meta">
+              <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time> · {readingTime(post.body)} dk
+            </p>
+            <h3>
+              <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+            </h3>
+            <p class="slide__desc">{post.data.description}</p>
+            <a class="slide__more" href={`/blog/${post.id}/`}>
+              Yazıyı oku →
+            </a>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+  <div class="car__dots" data-dots></div>
+  <div class="car__ctl">
+    <button type="button" data-prev aria-label="Önceki yazı">‹</button>
+    <button type="button" data-next aria-label="Sonraki yazı">›</button>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-carousel]');
+  if (root) {
+    const track = root.querySelector<HTMLElement>('[data-track]')!;
+    const dots = root.querySelector<HTMLElement>('[data-dots]')!;
+    const n = track.children.length;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let idx = 0;
+    let timer = 0;
+
+    for (let i = 0; i < n; i++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', `Yazı ${i + 1}`);
+      b.addEventListener('click', () => {
+        go(i);
+        auto();
+      });
+      dots.appendChild(b);
+    }
+    const go = (i: number) => {
+      idx = (i + n) % n;
+      track.style.transform = `translateX(-${idx * 100}%)`;
+      [...dots.children].forEach((d, j) => d.classList.toggle('is-on', j === idx));
+    };
+    const auto = () => {
+      window.clearInterval(timer);
+      if (reduce || n < 2) return;
+      timer = window.setInterval(() => {
+        if (!document.hidden) go(idx + 1);
+      }, 6000);
+    };
+    root.querySelector('[data-prev]')?.addEventListener('click', () => {
+      go(idx - 1);
+      auto();
+    });
+    root.querySelector('[data-next]')?.addEventListener('click', () => {
+      go(idx + 1);
+      auto();
+    });
+    root.addEventListener('mouseenter', () => window.clearInterval(timer));
+    root.addEventListener('mouseleave', auto);
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') go(idx + 1);
+      if (e.key === 'ArrowLeft') go(idx - 1);
+    });
+    let tx: number | null = null;
+    root.addEventListener('touchstart', (e) => (tx = e.touches[0].clientX), { passive: true });
+    root.addEventListener('touchend', (e) => {
+      if (tx === null) return;
+      const dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1));
+      tx = null;
+      auto();
+    });
+    go(0);
+    auto();
+  }
+</script>
+
+<style>
+  .car {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--bg-0);
+  }
+  .car__track {
+    display: flex;
+    transition: transform 0.6s var(--ease-out);
+  }
+  .slide {
+    flex: 0 0 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    min-height: 340px;
+    min-width: 0;
+  }
+  .slide__photo {
+    position: relative;
+    min-height: 220px;
+    background-size: cover;
+    background-position: center;
+  }
+  .slide__photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .slide__photo span {
+    position: absolute;
+    left: 1rem;
+    bottom: 0.8rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: #fff;
+    opacity: 0.85;
+    z-index: 1;
+  }
+  .slide__body {
+    padding: 2rem 2.25rem 3.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.7rem;
+    min-width: 0;
+  }
+  .slide__meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-3);
+  }
+  .slide__body h3 {
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .slide__body h3 a:hover {
+    color: var(--accent);
+  }
+  .slide__desc {
+    color: var(--text-2);
+    max-width: 46ch;
+  }
+  .slide__more {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .car__ctl {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 2;
+  }
+  .car__ctl button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-0);
+    font-size: 1.2rem;
+    display: grid;
+    place-items: center;
+    transition:
+      background 0.2s,
+      color 0.2s,
+      transform 0.2s;
+  }
+  .car__ctl button:hover {
+    background: var(--accent);
+    color: var(--accent-ink);
+    transform: scale(1.06);
+  }
+  .car__dots {
+    position: absolute;
+    left: 1.1rem;
+    bottom: 1.1rem;
+    display: flex;
+    gap: 6px;
+    z-index: 2;
+  }
+  .car__dots :global(button) {
+    width: 22px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    padding: 0;
+    transition:
+      width 0.3s,
+      background 0.3s;
+  }
+  .car__dots :global(button.is-on) {
+    background: var(--accent);
+    width: 36px;
+  }
+  @media (max-width: 900px) {
+    .slide {
+      grid-template-columns: 1fr;
+    }
+    .slide__photo {
+      min-height: 180px;
+    }
+    .slide__body {
+      padding: 1.5rem 1.5rem 3.25rem;
+    }
+  }
+</style>

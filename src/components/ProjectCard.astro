@@ -1,85 +1,86 @@
 ---
-import type { Project } from "../data/projects";
+import type { Project } from '../utils/posts';
 
-export interface Props {
+interface Props {
   project: Project;
-  index: number;
-  total: number;
 }
-
-const { project, index, total } = Astro.props;
-const num = String(index + 1).padStart(2, "0");
-const totalLabel = String(total).padStart(2, "0");
-const isSoon = project.status === "soon";
-const TagName = project.url && !isSoon ? "a" : "div";
-
-const statusLabel =
-  project.status === "live" ? "● Live" :
-  project.status === "wip" ? "● In progress" :
-  "○ Soon";
-
-const statusColor =
-  project.status === "live" ? "text-[var(--accent)]" :
-  project.status === "wip" ? "text-[var(--navy)]" :
-  "text-[var(--muted)]";
+const { project } = Astro.props;
+const { title, summary, stack, repo, url } = project.data;
 ---
 
-<TagName
-  href={project.url}
-  target={project.url ? "_blank" : undefined}
-  rel={project.url ? "noopener noreferrer" : undefined}
-  class:list={[
-    "group relative block py-12 md:py-16 border-t border-[var(--rule)]",
-    isSoon && "opacity-60",
-  ]}
-  data-cursor="grow"
-  data-anim="fade-up"
->
-  <!-- File header strip -->
-  <div class="grid grid-cols-12 gap-4 items-center mb-6 mono text-[0.6rem] uppercase tracking-[0.22em]">
-    <span class="col-span-2 md:col-span-1 text-[var(--accent)]">
-      Case {num} / {totalLabel}
-    </span>
-    <span class={`col-span-5 md:col-span-2 ${statusColor}`}>{statusLabel}</span>
-    <span class="hidden md:block md:col-span-6 text-[var(--muted)]">
-      Filed — {project.year}{project.role ? ` · ${project.role}` : ""}
-    </span>
-    <span class="col-span-5 md:col-span-3 text-right text-[var(--muted)]">
-      → {project.url ? new URL(project.url).hostname : "private"}
-    </span>
-  </div>
-
-  <!-- Big title row -->
-  <div class="grid grid-cols-12 gap-4 items-end">
-    <h3 class="col-span-12 md:col-span-8 display text-6xl md:text-[8.5rem] leading-[0.85] tracking-[-0.03em] group-hover:text-[var(--accent)] transition-colors duration-500">
-      {project.title}
-    </h3>
-
-    <div class="col-span-12 md:col-span-4 md:pb-4">
-      <p class="text-base leading-[1.55] text-[var(--ink)]/85 max-w-sm">
-        {project.description}
-      </p>
+<article class="project-card glass glass--hover">
+  <div class="project-card__head">
+    <h3>{title}</h3>
+    <div class="project-card__links">
+      {
+        repo && (
+          <a href={repo} target="_blank" rel="noopener" aria-label={`${title} — kaynak kod`} title="Kaynak kod">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 .5A12 12 0 0 0 8.2 23.9c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z" />
+            </svg>
+          </a>
+        )
+      }
+      {
+        url && (
+          <a href={url} target="_blank" rel="noopener" aria-label={`${title} — canlı`} title="Canlı">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M7 17 17 7M8 7h9v9" />
+            </svg>
+          </a>
+        )
+      }
     </div>
   </div>
+  <p class="project-card__summary">{summary}</p>
+  <ul class="project-card__stack" aria-label="Kullanılan teknolojiler">
+    {stack.map((item) => <li class="pill">{item}</li>)}
+  </ul>
+</article>
 
-  <!-- Tech tags + arrow -->
-  <div class="mt-8 flex flex-wrap items-center gap-y-3 justify-between">
-    <div class="flex flex-wrap gap-x-2 gap-y-1 mono text-[0.6rem] uppercase tracking-[0.22em] text-[var(--muted)]">
-      {project.tech.length === 0 && <span>—</span>}
-      {project.tech.map((t, i) => (
-        <>
-          {i > 0 && <span class="text-[var(--accent)]">/</span>}
-          <span>{t}</span>
-        </>
-      ))}
-    </div>
-
-    {project.url && !isSoon && (
-      <span class="mono text-[0.65rem] uppercase tracking-[0.22em] text-[var(--ink)] flex items-center gap-2 transition-transform duration-400 group-hover:translate-x-2">
-        <span class="block w-10 h-px bg-[var(--ink)] group-hover:bg-[var(--accent)] transition-colors"></span>
-        <span class="editorial-link">Open dossier</span>
-        <span aria-hidden>↗</span>
-      </span>
-    )}
-  </div>
-</TagName>
+<style>
+  .project-card {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+  }
+  .project-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .project-card__links {
+    display: flex;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+  .project-card__links a {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+  .project-card__links a:hover {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+  .project-card__summary {
+    color: var(--text-2);
+    font-size: 0.97rem;
+  }
+  .project-card__stack {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: auto;
+  }
+</style>

@@ -1,0 +1,25 @@
+---
+interface Props {
+  value: string;
+  label?: string;
+  class?: string;
+}
+const { value, label = 'Kopyala', class: className } = Astro.props;
+---
+
+<button type="button" class:list={['btn', 'copy-btn', className]} data-copy={value} aria-live="polite">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+    <rect x="9" y="9" width="11" height="11" rx="2"></rect>
+    <path d="M5 15V5a2 2 0 0 1 2-2h10"></path>
+  </svg>
+  <span data-copy-label>{label}</span>
+</button>
+
+<script src="../scripts/copy.ts"></script>
+
+<style>
+  .copy-btn.is-copied {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+</style>

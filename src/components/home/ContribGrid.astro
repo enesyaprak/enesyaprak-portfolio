@@ -1,0 +1,173 @@
+---
+/**
+ * GitHub tarzı katkı ızgarası. Veri build anında github.com/enesyaprak'tan çekilir;
+ * çekilemezse src/data/contributions.json yedeği kullanılır (bkz. src/utils/github.ts).
+ */
+import { getContributions } from '../../utils/github';
+import { profile } from '../../data/profile';
+
+const { days, total, live } = await getContributions();
+const fmt = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long' });
+const label = (n: number, d: string) => `${n === 0 ? 'Katkı yok' : `${n} katkı`} · ${fmt.format(new Date(d + 'T12:00:00Z'))}`;
+
+/* Sütunlar pazar günü başlar (GitHub ile aynı); ilk haftayı boş hücreyle doldur. */
+const pad = days.length ? new Date(days[0].date + 'T12:00:00Z').getUTCDay() : 0;
+const cells = [
+  ...Array.from({ length: pad }, () => null),
+  ...days.map((d) => ({ level: d.level, label: label(d.count, d.date) })),
+];
+const github = profile.socials.find((s) => s.icon === 'github');
+---
+
+<div class="contrib" data-hero-fade>
+  <div class="contrib__top">
+    <b>{github ? <a href={github.url} target="_blank" rel="me noopener">GitHub katkıları</a> : 'GitHub katkıları'}</b>
+    <span class="contrib__stat">son 12 ay · <strong>{total}</strong> katkı</span>
+  </div>
+  <div class="contrib__scroll">
+    <div class="cg" data-contrib role="img" aria-label={`Son 12 ayda ${total} katkı${live ? '' : ' (önbellek)'}`}>
+      {cells.map((c, i) => (c ? <i data-l={c.level} title={c.label} style={`--dl:${i * 3}ms`} /> : <i data-l="x" aria-hidden="true" />))}
+    </div>
+  </div>
+  <div class="contrib__legend" aria-hidden="true">
+    az <i style="background: var(--c0)"></i><i style="background: var(--c1)"></i><i style="background: var(--c2)"></i><i
+      style="background: var(--c3)"></i><i style="background: var(--c4)"></i> çok
+  </div>
+</div>
+
+<script>
+  /* Kareler rastgele "yanıp söner"; hareket azaltma tercihine ve sekme görünürlüğüne saygı duyar. */
+  const grid = document.querySelector<HTMLElement>('[data-contrib]');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  if (grid && !reduce.matches) {
+    const lit = [...grid.querySelectorAll<HTMLElement>('i:not([data-l="0"])')];
+    window.setInterval(() => {
+      if (document.hidden || lit.length === 0) return;
+      for (let k = 0; k < 4; k++) {
+        const cell = lit[Math.floor(Math.random() * lit.length)];
+        cell.classList.add('zap');
+        window.setTimeout(() => cell.classList.remove('zap'), 500 + Math.random() * 500);
+      }
+    }, 260);
+  }
+</script>
+
+<style>
+  .contrib {
+    margin-top: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1rem 0.8rem;
+    background: var(--bg-0);
+  }
+  .contrib__top a {
+    color: inherit;
+  }
+  .contrib__top a:hover {
+    color: var(--accent);
+  }
+  .contrib__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    margin-bottom: 0.7rem;
+    font-size: 0.95rem;
+  }
+  .contrib__stat {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-3);
+  }
+  .contrib__stat strong {
+    color: var(--text-1);
+    font-weight: 600;
+  }
+  .contrib__scroll {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+  .cg {
+    display: grid;
+    grid-template-rows: repeat(7, 10px);
+    grid-auto-flow: column;
+    grid-auto-columns: 10px;
+    gap: 3px;
+    width: max-content;
+  }
+  .cg i {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--c0);
+    transition:
+      background 0.45s,
+      transform 0.3s,
+      box-shadow 0.4s;
+  }
+  .cg i[data-l='x'] {
+    visibility: hidden;
+  }
+  .cg i[data-l='1'] {
+    background: var(--c1);
+  }
+  .cg i[data-l='2'] {
+    background: var(--c2);
+  }
+  .cg i[data-l='3'] {
+    background: var(--c3);
+  }
+  .cg i[data-l='4'] {
+    background: var(--c4);
+  }
+  .cg.is-in i {
+    animation: cg-pop 0.45s var(--ease-out) both;
+    animation-delay: var(--dl, 0s);
+  }
+  .cg i.zap {
+    background: var(--c4);
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent),
+      0 0 12px color-mix(in srgb, var(--accent) 70%, transparent);
+    transform: scale(1.35);
+    position: relative;
+    z-index: 1;
+  }
+  .cg i:hover {
+    transform: scale(1.4);
+    background: var(--c4);
+  }
+  @keyframes cg-pop {
+    from {
+      transform: scale(0.4);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  .contrib__legend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--text-3);
+  }
+  .contrib__legend i {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cg.is-in i {
+      animation: none;
+    }
+  }
+</style>

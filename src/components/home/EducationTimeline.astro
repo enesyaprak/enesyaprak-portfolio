@@ -1,0 +1,142 @@
+---
+import { profile } from '../../data/profile';
+const glyph = { ortaokul: '🏫', lise: '🎒', universite: '🎓' } as const;
+---
+
+<div class="ht" data-fill>
+  <span class="ht__fill" aria-hidden="true"></span>
+  {
+    profile.education.map((e, i) => (
+      <div class="ht__item" style={`--d:${i * 0.3}s`} data-reveal>
+        <i aria-hidden="true">{glyph[e.kind]}</i>
+        <div>
+          <b>{e.school}</b>
+          {e.detail && <span>{e.detail}</span>}
+          {e.period && <span>{e.period}</span>}
+          {e.note && <em>{e.note}</em>}
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .ht {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    position: relative;
+    margin-top: 0.5rem;
+  }
+  .ht::before {
+    content: '';
+    position: absolute;
+    left: 16%;
+    right: 16%;
+    top: 30px;
+    height: 2px;
+    background: var(--border);
+  }
+  .ht__fill {
+    position: absolute;
+    left: 16%;
+    right: 16%;
+    top: 30px;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.4s var(--ease-out);
+  }
+  .ht.is-in .ht__fill {
+    transform: scaleX(1);
+  }
+  .ht__item {
+    text-align: center;
+    padding: 0 0.6rem;
+    position: relative;
+    min-width: 0;
+  }
+  .ht__item i {
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--bg-0);
+    margin: 0 auto 0.8rem;
+    font-size: 1.4rem;
+    font-style: normal;
+    position: relative;
+    transition:
+      border-color 0.4s,
+      transform 0.4s;
+    transition-delay: var(--d, 0s);
+  }
+  .ht.is-in .ht__item i {
+    border-color: var(--accent);
+    transform: scale(1.06);
+  }
+  .ht__item b {
+    display: block;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  .ht__item span {
+    display: block;
+    color: var(--text-2);
+    font-size: 0.88rem;
+    margin-top: 0.25rem;
+  }
+  .ht__item em {
+    display: inline-block;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+    margin-top: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.1rem 0.6rem;
+  }
+  @media (max-width: 600px) {
+    .ht {
+      grid-template-columns: 1fr;
+      gap: 1.4rem;
+    }
+    .ht::before,
+    .ht__fill {
+      left: 29px;
+      right: auto;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      height: auto;
+    }
+    .ht__fill {
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+    .ht.is-in .ht__fill {
+      transform: scaleY(1);
+    }
+    .ht__item {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 0.9rem;
+      align-items: center;
+      text-align: left;
+      padding: 0;
+    }
+    .ht__item i {
+      margin: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ht__fill {
+      transform: none;
+    }
+  }
+</style>

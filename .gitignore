@@ -23,8 +23,6 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# claude code workspace settings
-.claude/
-
-# local zips / archives
-*.zip
+# cloudflare
+.wrangler/
+.env.*

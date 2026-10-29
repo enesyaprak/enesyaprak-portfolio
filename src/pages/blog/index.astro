@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getAllTags, getPosts } from '../../utils/posts';
+
+const posts = await getPosts();
+const tags = await getAllTags();
+---
+
+<BaseLayout title="Blog" description="DevOps, Kubernetes, CI/CD ve altyapı üzerine yazılar.">
+  <section class="page container">
+    <header class="page__header">
+      <p class="eyebrow">Blog</p>
+      <h1>Yazılar.</h1>
+      <p class="lead">Öğrendiklerim, takıldığım yerler ve kısa notlar. <a class="link" href="/rss.xml">RSS</a> ile takip edebilirsin.</p>
+      {
+        tags.length > 0 && (
+          <ul class="tags" aria-label="Etiketler">
+            {tags.map(({ tag, slug, count }) => (
+              <li>
+                <a class="pill" href={`/blog/etiket/${slug}/`}>
+                  #{tag} <span class="muted">{count}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+    <div class="grid grid--2" data-reveal-group>
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page {
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .page__header {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+  .tags {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: var(--space-2);
+  }
+  .tags .pill {
+    gap: 0.35rem;
+  }
+  .tags .pill:hover {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+</style>

@@ -1,26 +1,155 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Masthead from "../components/Masthead.astro";
-import Nav from "../components/Nav.astro";
-import Hero from "../components/Hero.astro";
-import Marquee from "../components/Marquee.astro";
-import Projects from "../components/Projects.astro";
-import About from "../components/About.astro";
-import Skills from "../components/Skills.astro";
-import Curriculum from "../components/Curriculum.astro";
-import Contact from "../components/Contact.astro";
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Sidebar from '../components/home/Sidebar.astro';
+import TechOrbs from '../components/home/TechOrbs.astro';
+import CareerTimeline from '../components/home/CareerTimeline.astro';
+import EducationTimeline from '../components/home/EducationTimeline.astro';
+import ProjectRow from '../components/home/ProjectRow.astro';
+import BlogCarousel from '../components/home/BlogCarousel.astro';
+import ContactBoxes from '../components/home/ContactBoxes.astro';
+import { profile } from '../data/profile';
+import { getPosts, getProjects } from '../utils/posts';
+
+const projects = await getProjects();
+const posts = (await getPosts()).slice(0, 4);
+const achievements = profile.achievements.filter((a) => !a.title.startsWith('['));
 ---
 
-<BaseLayout>
-  <Masthead />
-  <Nav />
-  <main>
-    <Hero />
-    <Marquee />
-    <Projects />
-    <About />
-    <Skills />
-    <Curriculum />
-    <Contact />
-  </main>
+<BaseLayout home>
+  <div class="home container">
+    <Sidebar />
+
+    <div class="home__main">
+      <TechOrbs />
+
+      <section class="hs" id="hakkimda" aria-labelledby="h-hakkimda">
+        <h2 id="h-hakkimda" class="hs__title" data-reveal>Hakkımda</h2>
+        <p class="band" data-reveal>{profile.intro}</p>
+
+        <div class="split">
+          <div>
+            <p class="eyebrow hs__eyebrow" data-reveal>Kariyer</p>
+            <CareerTimeline />
+          </div>
+          <div>
+            <p class="eyebrow hs__eyebrow" data-reveal>Eğitim</p>
+            <EducationTimeline />
+          </div>
+        </div>
+
+        {
+          achievements.length > 0 && (
+            <div class="ach" data-reveal-group>
+              <p class="eyebrow hs__eyebrow">Başarımlar</p>
+              {achievements.map((a) => (
+                <div class="ach__item">
+                  <span>{a.title}</span>
+                  <small>{a.year}</small>
+                </div>
+              ))}
+            </div>
+          )
+        }
+      </section>
+
+      <section class="hs" id="projelerim" aria-labelledby="h-projelerim">
+        <h2 id="h-projelerim" class="hs__title" data-reveal>Projelerim</h2>
+        <div class="pl" data-reveal-group>
+          {projects.map((project) => <ProjectRow project={project} />)}
+        </div>
+      </section>
+
+      <section class="hs" id="blogum" aria-labelledby="h-blogum">
+        <h2 id="h-blogum" class="hs__title" data-reveal>Blogum</h2>
+        <div data-reveal>
+          <BlogCarousel posts={posts} />
+        </div>
+        <p class="hs__more" data-reveal>
+          <a class="link" href="/blog/">Tüm yazılar →</a>
+          <a class="link" href="/rss.xml">RSS</a>
+        </p>
+      </section>
+
+      <section class="hs" id="iletisim" aria-labelledby="h-iletisim">
+        <h2 id="h-iletisim" class="hs__title" data-reveal>İletişim</h2>
+        <ContactBoxes />
+      </section>
+    </div>
+  </div>
 </BaseLayout>
+
+<style>
+  .home {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 8fr);
+    gap: 4rem;
+    padding-block: 4.5rem 0;
+    align-items: start;
+  }
+  .home__main {
+    min-width: 0;
+  }
+  .hs {
+    padding-top: 4.5rem;
+  }
+  .hs__title {
+    margin-bottom: 1.4rem;
+  }
+  .hs__eyebrow {
+    margin-bottom: 1.1rem;
+  }
+  .band {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.75rem;
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    line-height: 1.65;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--bg-0)), var(--bg-0));
+  }
+  .split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.75rem;
+    margin-top: 2.5rem;
+  }
+  .ach {
+    margin-top: 2.5rem;
+  }
+  .ach__item {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-top: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .ach__item:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+  .ach__item small {
+    font-family: var(--font-mono);
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  .pl {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .hs__more {
+    margin-top: 0.9rem;
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.92rem;
+  }
+  @media (max-width: 900px) {
+    .home {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      padding-block: 2.5rem 0;
+    }
+    .hs {
+      padding-top: 3.5rem;
+    }
+  }
+</style>

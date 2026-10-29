@@ -1,46 +1,60 @@
 ---
-import "../styles/global.css";
+import '../styles/global.css';
+import BaseHead from '../components/BaseHead.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
 
-export interface Props {
+interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  /** Ana sayfa: masaüstünde üst menü gizlenir, sol sütun menüsü kullanılır. */
+  home?: boolean;
 }
-
-const {
-  title = "Enes Yaprak — Field Notes / Web Developer",
-  description = "Enes Yaprak — web developer & builder of small useful things. Selected work, notes, contact.",
-} = Astro.props;
+const { home = false, ...props } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="tr">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <meta name="theme-color" content="#ede7d9" />
-    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg`} />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=JetBrains+Mono:wght@400;500;600&display=swap"
-    />
-
-    <title>{title}</title>
+    <BaseHead {...props} />
+    <slot name="head" />
   </head>
-  <body>
-    <slot />
-
-    <script>
-      import { initSmoothScroll } from "../scripts/scroll.ts";
-      import { initCursor } from "../scripts/cursor.ts";
-      import { initAnimations } from "../scripts/animations.ts";
-
-      initSmoothScroll();
-      initCursor();
-      initAnimations();
-    </script>
+  <body class:list={{ 'is-home': home }}>
+    <a class="skip-link" href="#icerik">İçeriğe atla</a>
+    <Nav />
+    <main id="icerik">
+      <slot />
+    </main>
+    <Footer />
+    <script src="../scripts/motion.ts"></script>
   </body>
 </html>
+
+<style is:global>
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    z-index: 100;
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 500;
+  }
+  .skip-link:focus {
+    top: 0.75rem;
+  }
+  @media (min-width: 900px) {
+    body.is-home .site-header {
+      display: none;
+    }
+    body.is-home {
+      scroll-padding-top: 1rem;
+    }
+  }
+</style>

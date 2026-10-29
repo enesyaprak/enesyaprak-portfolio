@@ -1,0 +1,7 @@
+/projects      /projeler/   301
+/projects/*    /projeler/   301
+/feed          /rss.xml     301
+/feed.xml      /rss.xml     301
+/rss           /rss.xml     301
+/hakkimda      /   301
+/hakkimda/     /   301

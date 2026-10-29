@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Sayfa bulunamadı" description="Aradığın sayfa yok.">
+  <section class="nf container--narrow">
+    <p class="eyebrow">404</p>
+    <h1>Bu sayfa yok.</h1>
+    <pre class="glass nf__code"><code><span class="muted">$</span> curl -I {Astro.url.pathname}
+HTTP/2 404
+<span class="muted">$</span> cd /</code></pre>
+    <a class="btn btn--primary" href="/">Ana sayfaya dön</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    padding-block: clamp(4rem, 12vw, 8rem);
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+  .nf__code {
+    padding: var(--space-4) var(--space-5);
+    font-size: 0.85rem;
+    color: var(--text-2);
+    overflow-x: auto;
+    max-width: 100%;
+  }
+</style>

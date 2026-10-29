@@ -1,0 +1,119 @@
+---
+import { profile } from '../../data/profile';
+import Icon from '../Icon.astro';
+import CopyButton from '../CopyButton.astro';
+---
+
+<div class="cb" data-reveal-group>
+  {
+    profile.socials.map((s) => (
+      <a class="cbox" href={s.url} target="_blank" rel="me noopener">
+        <i>
+          <Icon name={s.icon} size={44} />
+        </i>
+        <b>{s.label}</b>
+        <small>{s.handle}</small>
+      </a>
+    ))
+  }
+</div>
+
+<div class="mails" data-reveal-group>
+  {
+    profile.emails.map((m) => (
+      <div class="mail">
+        <a href={`mailto:${m}`}>{m}</a>
+        <CopyButton value={m} class="mail__copy" />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .cb {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.9rem;
+  }
+  .cbox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    aspect-ratio: 1.25;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-0);
+    font-weight: 700;
+    transition:
+      transform 0.3s var(--ease-out),
+      border-color 0.3s,
+      box-shadow 0.3s;
+  }
+  .cbox i {
+    color: var(--text-1);
+    transition:
+      transform 0.35s,
+      color 0.3s;
+  }
+  .cbox:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow: 0 20px 50px -26px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  .cbox:hover i {
+    color: var(--accent);
+    transform: scale(1.12) rotate(-4deg);
+  }
+  .cbox small {
+    font-weight: 500;
+    color: var(--text-3);
+    font-size: 0.8rem;
+  }
+  .mails {
+    margin-top: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .mail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.75rem 0.7rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-0);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+  .mail a {
+    overflow-wrap: anywhere;
+  }
+  .mail a:hover {
+    color: var(--accent);
+  }
+  .mail :global(.mail__copy) {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  @media (max-width: 600px) {
+    .cb {
+      grid-template-columns: 1fr;
+    }
+    .cbox {
+      aspect-ratio: auto;
+      flex-direction: row;
+      justify-content: flex-start;
+      padding: 1.1rem 1.25rem;
+    }
+    .cbox i :global(svg) {
+      width: 30px;
+      height: 30px;
+    }
+  }
+</style>

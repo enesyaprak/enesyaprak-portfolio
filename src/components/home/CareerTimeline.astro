@@ -1,0 +1,112 @@
+---
+import { profile } from '../../data/profile';
+---
+
+<div class="vt" data-fill>
+  <span class="vt__fill" aria-hidden="true"></span>
+  {
+    profile.career.map((c, i) => (
+      <div class:list={['vt__item', { 'is-now': c.current }]} style={`--d:${i * 0.2}s`} data-reveal>
+        <div class="vt__when">{c.period}</div>
+        <div class="vt__title">
+          {c.role} <span>· {c.orgUrl ? <a href={c.orgUrl} target="_blank" rel="noopener">{c.org}</a> : c.org}</span>
+        </div>
+        {c.text && <p class="vt__text">{c.text}</p>}
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .vt {
+    position: relative;
+    padding-left: 2.5rem;
+  }
+  .vt::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--border);
+  }
+  .vt__fill {
+    position: absolute;
+    left: 11px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 1.4s var(--ease-out);
+  }
+  .vt.is-in .vt__fill {
+    transform: scaleY(1);
+  }
+  .vt__item {
+    position: relative;
+    padding-bottom: 1.8rem;
+  }
+  .vt__item:last-child {
+    padding-bottom: 0;
+  }
+  .vt__item::before {
+    content: '';
+    position: absolute;
+    left: -2.25rem;
+    top: 6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--text-3);
+    background: var(--bg-0);
+    transition:
+      border-color 0.4s,
+      background 0.4s;
+    transition-delay: var(--d, 0s);
+  }
+  .vt.is-in .vt__item::before {
+    border-color: var(--accent);
+  }
+  .vt.is-in .vt__item.is-now::before {
+    background: var(--accent);
+    animation: vt-ping 2.2s ease-out infinite;
+  }
+  @keyframes vt-ping {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 50%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 14px color-mix(in srgb, var(--accent) 0%, transparent);
+    }
+  }
+  .vt__when {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-3);
+  }
+  .vt__title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0.15rem 0;
+    letter-spacing: -0.01em;
+  }
+  .vt__title span {
+    color: var(--accent);
+  }
+  .vt__text {
+    color: var(--text-2);
+    font-size: 0.95rem;
+    max-width: 48ch;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .vt__fill {
+      transform: none;
+    }
+    .vt.is-in .vt__item.is-now::before {
+      animation: none;
+    }
+  }
+</style>

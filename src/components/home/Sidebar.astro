@@ -1,0 +1,347 @@
+---
+import { site, sideNav } from '../../data/site';
+import { profile } from '../../data/profile';
+import { getActivity } from '../../utils/github';
+import { getProjects } from '../../utils/posts';
+import ContribGrid from './ContribGrid.astro';
+import ThemeToggle from '../ThemeToggle.astro';
+
+const activity = await getActivity();
+const projectCount = (await getProjects()).length;
+const github = profile.socials.find((s) => s.icon === 'github');
+const initials = site.name
+  .split(' ')
+  .map((w) => w[0])
+  .join('');
+const learning = profile.now.learning.startsWith('[') ? '' : profile.now.learning;
+const dayFmt = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' });
+const buildTime = new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: profile.now.timeZone }).format(
+  new Date()
+);
+---
+
+<aside class="side" id="anasayfa">
+  <div class="side__inner" data-side-inner>
+    {
+      profile.photo ? (
+        <img class="side__photo" src={profile.photo} alt={site.name} width="88" height="88" data-hero-fade />
+      ) : (
+        <div class="side__photo side__photo--txt" aria-hidden="true" data-hero-fade>
+          {initials}
+        </div>
+      )
+    }
+    <h1 class="side__name" data-hero-fade>{site.name}</h1>
+    <p class="side__role" data-hero-fade><b>{site.title}</b> · {site.location}</p>
+    <div class="side__ctas" data-hero-fade>
+      <a class="btn btn--primary" href="#iletisim">İletişime geç</a>
+      <a class="btn" href="#projelerim">Projelerim</a>
+      <ThemeToggle class="side__theme" />
+    </div>
+
+    <nav class="side__nav" aria-label="Bölümler" data-hero-fade>
+      {
+        sideNav.map((item, i) => (
+          <a href={item.href} aria-current={i === 0 ? 'true' : undefined} data-side-link>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <ContribGrid />
+
+    <div class="card now" data-hero-fade>
+      <div class="card__top">
+        <b>Şu an</b>
+        <span class="card__meta"><i class="now__dot" aria-hidden="true"></i><span data-clock data-tz={profile.now.timeZone}>{buildTime}</span> {profile.now.city}</span>
+      </div>
+      <dl class="now__list">
+        <div><dt>Çalışıyorum</dt><dd>{profile.now.working}</dd></div>
+        {learning && <div><dt>Öğreniyorum</dt><dd>{learning}</dd></div>}
+      </dl>
+    </div>
+
+    <div class="card act" data-hero-fade>
+      <div class="card__top">
+        <b>Son hareketler</b>
+        {github && <a class="card__meta" href={github.url} target="_blank" rel="me noopener">{github.handle}</a>}
+      </div>
+      <ul class="act__list">
+        {
+          activity.items.map((it) => (
+            <li>
+              <span class="act__kind">push</span>
+              <a href={it.url} target="_blank" rel="noopener">{it.name}</a>
+              <time datetime={it.pushedAt}>{dayFmt.format(new Date(it.pushedAt))}</time>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="act__stats">
+        <div><b>{activity.repoCount}</b><small>repo</small></div>
+        <div><b data-contrib-total>–</b><small>katkı</small></div>
+        <div><b>{projectCount}</b><small>proje</small></div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+  /* Saat: Eskişehir saatini canlı tutar. */
+  const clock = document.querySelector<HTMLElement>('[data-clock]');
+  if (clock) {
+    const fmt = new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: clock.dataset.tz });
+    const tick = () => (clock.textContent = fmt.format(new Date()));
+    tick();
+    window.setInterval(tick, 15_000);
+  }
+
+  /* Katkı toplamını ızgaradan al (tek kaynak). */
+  const total = document.querySelector<HTMLElement>('[data-contrib-total]');
+  const grid = document.querySelector<HTMLElement>('[data-contrib]');
+  const m = grid?.getAttribute('aria-label')?.match(/(\d+) katkı/);
+  if (total && m) total.textContent = m[1];
+
+  /* Sol sütun ekrandan uzunsa, aşağı kaydırınca altı görünsün diye sticky üst değerini ayarla. */
+  const inner = document.querySelector<HTMLElement>('[data-side-inner]');
+  const fit = () => {
+    if (!inner) return;
+    const gap = 48;
+    const over = inner.offsetHeight + gap * 2 - window.innerHeight;
+    inner.style.top = over > 0 ? `${gap - over}px` : '';
+  };
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+</script>
+
+<style>
+  .side {
+    min-width: 0;
+  }
+  .side__inner {
+    position: sticky;
+    top: 3rem;
+  }
+  /* Tema düğmesi butonların yanında; mobilde üst menüdekini kullanır. */
+  .side__ctas :global(.side__theme) {
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .side__ctas :global(.side__theme) {
+      display: inline-grid;
+    }
+  }
+  .side__photo {
+    width: 88px;
+    height: 88px;
+    border-radius: 22px;
+    object-fit: cover;
+    margin-bottom: 1.1rem;
+    display: block;
+  }
+  .side__photo--txt {
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--c2), var(--c4));
+    color: var(--accent-ink);
+    font-weight: 700;
+    font-size: 1.7rem;
+    letter-spacing: -0.02em;
+  }
+  .side__name {
+    margin: 0;
+  }
+  .side__role {
+    margin-top: 0.6rem;
+    font-size: 1.15rem;
+    color: var(--text-2);
+  }
+  .side__role b {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .side__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.4rem;
+  }
+  .side__nav {
+    display: none;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .side__nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: var(--text-3);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .side__nav a::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    background: var(--border);
+    transition:
+      width 0.3s var(--ease-out),
+      background 0.3s var(--ease-out);
+  }
+  .side__nav a:hover {
+    color: var(--text-1);
+  }
+  .side__nav a[aria-current='true'] {
+    color: var(--text-1);
+  }
+  .side__nav a[aria-current='true']::before {
+    width: 56px;
+    background: var(--accent);
+  }
+  @media (min-width: 900px) {
+    .side__nav {
+      display: flex;
+    }
+  }
+
+  /* Kartlar */
+  .card {
+    margin-top: 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.95rem 1rem;
+    background: var(--bg-0);
+  }
+  .card__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+  }
+  .card__meta {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-3);
+  }
+  a.card__meta:hover {
+    color: var(--accent);
+  }
+  .now__dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+    margin-right: 0.4rem;
+    vertical-align: middle;
+    animation: now-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes now-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
+    }
+    50% {
+      box-shadow: 0 0 0 7px rgba(22, 163, 74, 0.06);
+    }
+  }
+  .now__list {
+    margin: 0.7rem 0 0;
+    display: grid;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+  }
+  .now__list div {
+    display: flex;
+    gap: 0.7rem;
+    align-items: baseline;
+  }
+  .now__list dt {
+    flex: 0 0 6.5em;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .now__list dd {
+    margin: 0;
+    min-width: 0;
+  }
+  .act__list {
+    list-style: none;
+    margin: 0.7rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+    font-size: 0.86rem;
+  }
+  .act__list li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.6rem;
+    align-items: baseline;
+  }
+  .act__kind {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+  }
+  .act__list a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-1);
+  }
+  .act__list a:hover {
+    color: var(--accent);
+  }
+  .act__list time {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  .act__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+  }
+  .act__stats div {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.55rem 0.4rem;
+    text-align: center;
+  }
+  .act__stats b {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .act__stats small {
+    font-size: 0.64rem;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .now__dot {
+      animation: none;
+    }
+  }
+</style>

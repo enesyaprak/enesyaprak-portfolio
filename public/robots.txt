@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://enesyaprak.com/sitemap-index.xml

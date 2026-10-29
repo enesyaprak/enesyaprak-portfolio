@@ -1,0 +1,123 @@
+---
+import type { Project } from '../../utils/posts';
+import Icon from '../Icon.astro';
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const { title, summary, stack, repo, url, icon, status } = project.data;
+const href = repo ?? url;
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag
+  class:list={['pj', { 'pj--wip': status === 'devam' }]}
+  href={href}
+  target={href ? '_blank' : undefined}
+  rel={href ? 'noopener' : undefined}
+  aria-label={href ? `${title} — GitHub'da aç` : undefined}
+>
+  <i class="pj__icon">{icon ? <Icon name={icon} size={26} /> : <span class="pj__initial">{title.slice(0, 1)}</span>}</i>
+  <div class="pj__body">
+    <b class="pj__title">
+      {title}
+      {status === 'devam' && <span class="pj__badge">devam ediyor</span>}
+    </b>
+    <p class="pj__summary">{summary}</p>
+    <div class="pj__tags">{stack.map((s) => <span class="pill">{s}</span>)}</div>
+  </div>
+  {href && <span class="pj__go" aria-hidden="true">→</span>}
+</Tag>
+
+<style>
+  .pj {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+    gap: 1.1rem;
+    align-items: center;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-0);
+    transition:
+      transform 0.3s var(--ease-out),
+      border-color 0.3s,
+      background 0.3s;
+  }
+  a.pj:hover {
+    transform: translateX(6px);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 5%, var(--bg-0));
+  }
+  .pj__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    color: var(--text-1);
+    font-style: normal;
+    transition: color 0.3s;
+  }
+  .pj:hover .pj__icon {
+    color: var(--accent);
+  }
+  .pj__initial {
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  .pj__title {
+    display: block;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+  }
+  .pj__badge {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-left: 0.6rem;
+    vertical-align: middle;
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+  }
+  .pj__summary {
+    margin: 0.2rem 0 0.5rem;
+    color: var(--text-2);
+    font-size: 0.95rem;
+  }
+  .pj__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .pj__go {
+    font-size: 1.4rem;
+    color: var(--text-3);
+    transition:
+      transform 0.3s,
+      color 0.3s;
+  }
+  .pj:hover .pj__go {
+    transform: translateX(6px);
+    color: var(--accent);
+  }
+  @media (max-width: 600px) {
+    .pj {
+      grid-template-columns: 44px minmax(0, 1fr);
+      padding: 1rem;
+    }
+    .pj__icon {
+      width: 44px;
+      height: 44px;
+    }
+    .pj__go {
+      display: none;
+    }
+  }
+</style>

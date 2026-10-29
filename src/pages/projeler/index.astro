@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../utils/posts';
+
+const projects = await getProjects();
+---
+
+<BaseLayout title="Projeler" description="Altyapı, CI/CD ve gözlemlenebilirlik üzerine ürettiğim projeler.">
+  <section class="page container">
+    <header class="page__header">
+      <p class="eyebrow">Projeler</p>
+      <h1>Ürettiğim işler.</h1>
+      <p class="lead">Çoğu açık kaynak, bazıları iş yerinden anonimleştirilmiş vaka notları.</p>
+    </header>
+    <div class="grid grid--2 grid--3" data-reveal-group>
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page {
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .page__header {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+</style>

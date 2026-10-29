@@ -1,47 +1,159 @@
 ---
-const links = [
-  { href: "#work", label: "Case Files", num: "01" },
-  { href: "#about", label: "Practice", num: "02" },
-  { href: "#stack", label: "Stack", num: "03" },
-  { href: "#record", label: "Record", num: "04" },
-  { href: "#contact", label: "Telegram", num: "05" },
-];
+import { nav, site } from '../data/site';
+import ThemeToggle from './ThemeToggle.astro';
+
+const current = Astro.url.pathname;
+const isActive = (href: string) => {
+  if (href === '/') return current === '/';
+  if (href.startsWith('/#')) return false;
+  return current.startsWith(href);
+};
 ---
 
-<header
-  class="fixed top-0 inset-x-0 z-40 px-6 md:px-10 py-4 flex items-center justify-between backdrop-blur-[2px] mix-blend-difference text-[var(--paper)] pointer-events-none"
->
-  <a
-    href="#top"
-    class="display text-2xl tracking-tight pointer-events-auto magnetic"
-    data-cursor="grow"
-    data-magnetic="0.25"
-    aria-label="Anasayfa"
-  >
-    <span class="italic">E</span><span class="italic">·</span><span class="italic">y</span>
-  </a>
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="/" class="wordmark" aria-label={`${site.name} — ana sayfa`}>enesyaprak.com</a>
 
-  <nav class="hidden md:flex items-center gap-6 pointer-events-auto">
-    {
-      links.map((link) => (
-        <a
-          href={link.href}
-          class="mono text-[0.65rem] uppercase tracking-[0.22em] magnetic group"
-          data-cursor="grow"
-          data-magnetic="0.3"
-        >
-          <span class="text-[var(--accent)]">§{link.num}</span>
-          <span class="ml-1 editorial-link">{link.label}</span>
-        </a>
-      ))
-    }
-  </nav>
+    <button
+      class="nav-toggle"
+      type="button"
+      data-nav-toggle
+      aria-expanded="false"
+      aria-controls="site-nav"
+      aria-label="Menüyü aç"
+    >
+      <span></span><span></span>
+    </button>
 
-  <a
-    href="#contact"
-    class="md:hidden mono text-[0.65rem] uppercase tracking-[0.22em] pointer-events-auto"
-    data-cursor="grow"
-  >
-    Telegram →
-  </a>
+    <div class="site-header__right">
+      <nav id="site-nav" class="site-nav" data-nav aria-label="Ana menü">
+        <ul>
+          {
+            nav.map((item) => (
+              <li>
+                <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <ThemeToggle />
+    </div>
+  </div>
 </header>
+
+<script src="../scripts/nav.ts"></script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    height: var(--header-h);
+    border-bottom: 1px solid transparent;
+    background: color-mix(in srgb, var(--bg-0) 80%, transparent);
+    -webkit-backdrop-filter: blur(var(--blur));
+    backdrop-filter: blur(var(--blur));
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+  .site-header.is-scrolled {
+    border-bottom-color: var(--border);
+  }
+  .site-header__inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+  .site-header__right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .wordmark {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .site-nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: var(--space-1);
+  }
+  .site-nav a {
+    display: inline-block;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-2);
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      background var(--dur-fast) var(--ease-out);
+  }
+  .site-nav a:hover {
+    color: var(--text-1);
+    background: var(--bg-1);
+  }
+  .site-nav a[aria-current='page'] {
+    color: var(--accent-ink);
+    background: var(--accent);
+  }
+  .nav-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .nav-toggle span {
+    width: 16px;
+    height: 1.5px;
+    background: var(--text-1);
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  @media (max-width: 720px) {
+    .nav-toggle {
+      display: flex;
+      order: 3;
+    }
+    .site-header__right {
+      order: 2;
+    }
+    .site-nav {
+      position: absolute;
+      top: var(--header-h);
+      left: 0;
+      right: 0;
+      display: none;
+      padding: var(--space-3) var(--space-4) var(--space-4);
+      background: var(--bg-0);
+      border-bottom: 1px solid var(--border);
+    }
+    .site-nav.is-open {
+      display: block;
+    }
+    .site-nav ul {
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .site-nav a {
+      display: block;
+      padding: 0.7rem 0.9rem;
+      font-size: 1rem;
+    }
+    [aria-expanded='true'] span:first-child {
+      transform: translateY(3.25px) rotate(45deg);
+    }
+    [aria-expanded='true'] span:last-child {
+      transform: translateY(-3.25px) rotate(-45deg);
+    }
+  }
+</style>

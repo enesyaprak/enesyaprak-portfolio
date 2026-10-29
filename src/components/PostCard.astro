@@ -1,0 +1,65 @@
+---
+import type { Post } from '../utils/posts';
+import { formatDate, readingTime } from '../utils/posts';
+import TagPill from './TagPill.astro';
+
+interface Props {
+  post: Post;
+}
+const { post } = Astro.props;
+const minutes = readingTime(post.body);
+---
+
+<article class="post-card glass glass--hover">
+  <div class="post-card__meta muted">
+    <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+    <span aria-hidden="true">·</span>
+    <span>{minutes} dk okuma</span>
+  </div>
+  <h3><a class="post-card__link" href={`/blog/${post.id}/`}>{post.data.title}</a></h3>
+  <p class="post-card__desc">{post.data.description}</p>
+  {
+    post.data.tags.length > 0 && (
+      <div class="post-card__tags">
+        {post.data.tags.map((tag) => (
+          <TagPill tag={tag} />
+        ))}
+      </div>
+    )
+  }
+</article>
+
+<style>
+  .post-card {
+    position: relative;
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-5);
+  }
+  .post-card__meta {
+    display: flex;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+  }
+  .post-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .post-card__link:hover {
+    color: var(--accent);
+  }
+  .post-card__desc {
+    color: var(--text-2);
+    font-size: 0.97rem;
+  }
+  .post-card__tags {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+</style>
