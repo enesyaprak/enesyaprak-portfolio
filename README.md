@@ -1,6 +1,6 @@
 # enesyaprak.com
 
-Enes Yaprak'ın kişisel sitesi. Astro (statik) + GSAP + Lenis, Cloudflare Pages üzerinde.
+Enes Yaprak'ın kişisel sitesi. Astro (statik) + GSAP + Lenis, Cloudflare Workers (Static Assets) üzerinde.
 
 ## Geliştirme
 
@@ -9,7 +9,7 @@ npm install
 npm run dev        # http://localhost:4321
 npm run build      # astro check + astro build → dist/
 npm run preview    # build çıktısını önizle
-npm run cf:dev     # dist/ klasörünü wrangler ile sun (_headers/_redirects dahil)
+npm run cf:dev     # dist/ klasörünü wrangler ile Workers gibi sun (_headers/_redirects dahil)
 ```
 
 Node 24 (`.node-version`). TypeScript 5.9'da sabit; `typescript@7` `astro check` ile uyumsuz.
@@ -60,14 +60,14 @@ Animasyonlar `prefers-reduced-motion: no-preference` koşuluna bağlı; JS yoksa
 1. **Repo**: GitHub'a `main` dalıyla push et.
 2. **Zone**: Cloudflare → Add domain → `enesyaprak.com` (Free). Verilen iki nameserver'ı not et.
 3. **Registrar**: Nameserver'ları Cloudflare'inkilerle değiştir. WHOIS gizliliği açık, transfer kilidi açık. `enesyaprak.com` için otomatik yenileme **açık**, hediye domainler (`.online` vb.) için **kapalı**. Zone "Active" olana kadar bekle (e-posta gelir).
-4. **Pages projesi**: Workers & Pages → Create → Pages → **Connect to Git** (Direct Upload sonradan Git'e çevrilemez).
-   - Production branch: `main`
+4. **Workers projesi**: Workers & Pages → Create → Workers → **Import a repository** → `enesyaprak/enesyaprak-portfolio`.
+   - Project name: `enesyaprak-site` (wrangler.jsonc içindeki `name` ile aynı olmalı)
    - Build command: `npm run build`
-   - Output directory: `dist`
-   - Environment variable: `NODE_VERSION=24`
-5. **Custom domain**: Pages projesi → Custom domains → `enesyaprak.com` ve `www.enesyaprak.com` ekle. CNAME kayıtlarını Cloudflare kendisi oluşturur; **elle önceden oluşturma** (522 hatası verir).
+   - Deploy command: `npx wrangler deploy`
+   - Node sürümü `.node-version` dosyasından (24) okunur; ek değişken gerekmez.
+5. **Custom domain**: Worker → Settings → Domains & Routes → Add → Custom domain: `enesyaprak.com` ve `www.enesyaprak.com`. DNS kayıtlarını Cloudflare kendisi oluşturur; **elle önceden oluşturma**.
 6. **www → apex**: Rules → Redirect Rules → Create: wildcard `https://www.*` → `https://${1}`, 301, "preserve query string".
-7. **pages.dev → apex**: Account → Bulk Redirects → liste oluştur: `https://enesyaprak-com.pages.dev/` → `https://enesyaprak.com/`, 301, subpath matching + preserve path suffix + preserve query string. Listeyi bir Bulk Redirect kuralına bağla.
+7. **workers.dev → apex**: Worker → Settings → Domains & Routes → `workers.dev` adresini kapat (Disable). Böylece site yalnızca kendi alan adından sunulur.
 8. **Hediye domainler**: Her birini zone olarak ekle, registrar'da NS'i değiştir, apex ve `www` için **proxied** (turuncu bulut) `AAAA 100::` kaydı oluştur, aynı Bulk Redirect listesine `https://enesyaprak.online/` → `https://enesyaprak.com/` (include subdomains + subpath + preserve suffix/query, 301) ekle.
 9. **E-posta**: Email → Email Routing → etkinleştir (MX/SPF/DKIM otomatik eklenir) → Destination addresses: Gmail adresini ekle ve gelen doğrulama linkine tıkla → Routing rules: `iletisim` → Gmail. Gmail dışı bir adresten test gönder.
    - İsteğe bağlı "Send mail as": Google hesabında 2 adımlı doğrulama → App Password → Gmail Ayarlar → Accounts → "Send mail as" → `iletisim@enesyaprak.com`, SMTP `smtp.gmail.com:587`, TLS, kullanıcı adı tam Gmail adresi. SPF kaydını `v=spf1 include:_spf.mx.cloudflare.net include:_spf.google.com ~all` yap, `_dmarc` TXT ekle: `v=DMARC1; p=none; rua=mailto:iletisim@enesyaprak.com`.
@@ -82,7 +82,7 @@ curl -I https://enesyaprak.com | grep -i content-security-policy
 dig MX enesyaprak.com +short
 ```
 
-Elle deploy gerekirse (Git bağlantısı olmadan): `npx wrangler login && npm run build && npm run cf:deploy`.
+Elle deploy gerekirse (Git bağlantısı olmadan): `npx wrangler login && npm run build && npm run cf:deploy`. Yerel test: `npm run build && npm run cf:dev`.
 
 ## Yapılacaklar
 
