@@ -1,5 +1,5 @@
 ---
-/** Açık / koyu tema düğmesi. Seçim localStorage'da; seçim yoksa sistem tercihi geçerli. */
+/** Açık / koyu tema düğmesi. Varsayılan açık tema; seçim localStorage'da saklanır. Açılışta kısa bir nabız ile kendini gösterir. */
 interface Props {
   class?: string;
 }
@@ -17,9 +17,9 @@ const { class: cls } = Astro.props;
 </button>
 
 <script>
-  const mq = matchMedia('(prefers-color-scheme: dark)');
   const root = document.documentElement;
-  const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : mq.matches);
+  const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  const isDark = () => root.dataset.theme === 'dark';
   const sync = () => {
     const dark = isDark();
     document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((b) => {
@@ -31,13 +31,13 @@ const { class: cls } = Astro.props;
     b.addEventListener('click', () => {
       const next = isDark() ? 'light' : 'dark';
       root.dataset.theme = next;
+      meta?.setAttribute('content', next === 'dark' ? '#0d1117' : '#ffffff');
       try {
         localStorage.setItem('theme', next);
       } catch {}
       sync();
     })
   );
-  mq.addEventListener('change', sync);
   sync();
 </script>
 
@@ -81,14 +81,24 @@ const { class: cls } = Astro.props;
     opacity: 0;
     transform: rotate(60deg) scale(0.6);
   }
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme='light'])) .theme-toggle__sun {
-      opacity: 1;
-      transform: none;
+  /* Açılışta iki kısa nabız: düğme kendini belli etsin. */
+  @keyframes theme-hello {
+    0%,
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
     }
-    :global(:root:not([data-theme='light'])) .theme-toggle__moon {
-      opacity: 0;
-      transform: rotate(60deg) scale(0.6);
+    40% {
+      transform: scale(1.16);
+      box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent);
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-toggle {
+      animation: theme-hello 0.9s var(--ease-out) 1.1s 2 both;
+    }
+    .theme-toggle:hover {
+      animation: none;
     }
   }
 </style>

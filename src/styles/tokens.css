@@ -53,32 +53,7 @@
   --dur-fast: 0.18s;
 }
 
-/* Koyu tema: sistem tercihi (seçim yapılmadıysa) ve elle seçim. public/theme.js data-theme'i ayarlar. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-  color-scheme: dark;
-  /* Zümrüt: koyu zemin + GitHub yeşili (onaylı taslak paleti) */
-  --bg-0: #0d1117;
-  --bg-1: #161b22;
-  --bg-2: #1c2129;
-  --glass: #161b22;
-  --glass-strong: #1c2129;
-  --border: rgba(139, 148, 158, 0.2);
-  --border-hover: rgba(139, 148, 158, 0.4);
-  --text-1: #e6edf3;
-  --text-2: #8b949e;
-  --text-3: #6e7681;
-  --accent: #3fb950;
-  --accent-hover: #56d364;
-  --accent-dim: rgba(63, 185, 80, 0.15);
-  --accent-ink: #04140a;
-  --c0: #161b22;
-  --c1: #0e4429;
-  --c2: #006d32;
-  --c3: #26a641;
-  --c4: #39d353;
-  }
-}
+/* Koyu tema yalnızca elle seçimle (public/theme.js localStorage'daki seçimi uygular). Varsayılan: açık. */
 :root[data-theme='dark'] {
   color-scheme: dark;
   /* Zümrüt: koyu zemin + GitHub yeşili (onaylı taslak paleti) */
