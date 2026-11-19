@@ -101,7 +101,7 @@ export const profile = {
 
   socials: [
     { label: 'GitHub', handle: 'github.com/enesyaprak', url: 'https://github.com/enesyaprak', icon: 'github' },
-    { label: 'LinkedIn', handle: 'linkedin.com/in/ensyprk', url: 'https://www.linkedin.com/in/ensyprk', icon: 'linkedin' },
+    { label: 'LinkedIn', handle: 'linkedin.com/in/enesyaprak', url: 'https://www.linkedin.com/in/enesyaprak', icon: 'linkedin' },
   ] as SocialItem[],
 
   emails: ['enesyprkone@gmail.com'] as string[],
